@@ -29,7 +29,9 @@ jobs:
           PR_NUMBER=${{ github.event.pull_request.number }}
           PR_TITLE=${{ github.event.pull_request.title }}
           PR_URL=${{ github.event.pull_request.html_url }}
+          COMMIT_MSG="Merge pull request #$PR_NUMBER from ${{ github.event.pull_request.head.repo.full_name }} - $PR_TITLE"
+          CLOSES_MSG="Closes $PR_URL"
           
           git checkout ${{ github.event.pull_request.base.ref }}
-          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #$PR_NUMBER from ${{ github.event.pull_request.head.repo.full_name }} - $PR_TITLE" -m "Closes $PR_URL"
+          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "$COMMIT_MSG" -m "$CLOSES_MSG"
           git push 

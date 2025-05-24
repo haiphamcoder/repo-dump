@@ -7,6 +7,10 @@ on:
       - main
       - feature-dev
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   merge:
     name: Merge PR
@@ -21,8 +25,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Create merge script
         run: |
@@ -40,7 +44,7 @@ jobs:
           
           git checkout "$TARGET_BRANCH"
           git merge --no-ff "$COMMIT_SHA" -m "Merge pull request #$PR_NUMBER from $REPO_NAME - $ESCAPED_TITLE" -m "Closes $PR_URL"
-          git push
+          git push origin "$TARGET_BRANCH"
           EOF
           chmod +x merge.sh
 

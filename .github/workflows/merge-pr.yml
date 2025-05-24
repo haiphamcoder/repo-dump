@@ -1,0 +1,35 @@
+name: Merge Pull Request
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - feature-dev
+
+jobs:
+  merge:
+    name: Merge PR
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Merge PR
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE=${{ github.event.pull_request.title }}
+          PR_URL=${{ github.event.pull_request.html_url }}
+          
+          git checkout ${{ github.event.pull_request.base.ref }}
+          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "Merge pull request #$PR_NUMBER from ${{ github.event.pull_request.head.repo.full_name }} - $PR_TITLE" -m "Closes $PR_URL"
+          git push 

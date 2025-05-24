@@ -24,14 +24,32 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      - name: Merge PR
+      - name: Create merge script
         run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          PR_TITLE=${{ github.event.pull_request.title }}
-          PR_URL=${{ github.event.pull_request.html_url }}
-          COMMIT_MSG="Merge pull request #$PR_NUMBER from ${{ github.event.pull_request.head.repo.full_name }} - $PR_TITLE"
-          CLOSES_MSG="Closes $PR_URL"
+          cat > merge.sh << 'EOF'
+          #!/bin/bash
+          PR_NUMBER="$1"
+          PR_TITLE="$2"
+          PR_URL="$3"
+          TARGET_BRANCH="$4"
+          COMMIT_SHA="$5"
+          REPO_NAME="$6"
           
-          git checkout ${{ github.event.pull_request.base.ref }}
-          git merge --no-ff ${{ github.event.pull_request.head.sha }} -m "$COMMIT_MSG" -m "$CLOSES_MSG"
-          git push 
+          # Escape special characters in PR_TITLE
+          ESCAPED_TITLE=$(echo "$PR_TITLE" | sed 's/:/ -/g')
+          
+          git checkout "$TARGET_BRANCH"
+          git merge --no-ff "$COMMIT_SHA" -m "Merge pull request #$PR_NUMBER from $REPO_NAME - $ESCAPED_TITLE" -m "Closes $PR_URL"
+          git push
+          EOF
+          chmod +x merge.sh
+
+      - name: Execute merge
+        run: |
+          ./merge.sh \
+            "${{ github.event.pull_request.number }}" \
+            "${{ github.event.pull_request.title }}" \
+            "${{ github.event.pull_request.html_url }}" \
+            "${{ github.event.pull_request.base.ref }}" \
+            "${{ github.event.pull_request.head.sha }}" \
+            "${{ github.event.pull_request.head.repo.full_name }}" 

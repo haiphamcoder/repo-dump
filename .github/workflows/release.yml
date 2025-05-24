@@ -15,12 +15,6 @@ jobs:
           - os: ubuntu-latest
             artifact_name: "repo-dump-linux-x86_64.deb"
             package_type: "deb"
-          - os: windows-latest
-            artifact_name: "repo-dump-windows-x86_64.exe"
-            package_type: "exe"
-          - os: macos-latest
-            artifact_name: "repo-dump-macos-x86_64.dmg"
-            package_type: "dmg"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,8 +30,6 @@ jobs:
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
             sudo apt-get update
             sudo apt-get install -y build-essential pkg-config libssl-dev
-          elif [ "${{ matrix.os }}" = "macos-latest" ]; then
-            brew install pkg-config openssl
           fi
       - name: Build
         run: cargo build --release
@@ -46,8 +38,11 @@ jobs:
           if [ "${{ matrix.package_type }}" = "deb" ]; then
             # Create Debian package
             mkdir -p debian/DEBIAN
+            # Extract version from tag (remove 'v' prefix)
+            VERSION=${GITHUB_REF#refs/tags/}
+            VERSION=${VERSION#v}
             echo "Package: repo-dump" > debian/DEBIAN/control
-            echo "Version: ${{ github.ref_name }}" >> debian/DEBIAN/control
+            echo "Version: $VERSION" >> debian/DEBIAN/control
             echo "Architecture: amd64" >> debian/DEBIAN/control
             echo "Maintainer: ngochai285nd@gmail.com" >> debian/DEBIAN/control
             echo "Description: A tool to dump the source code of a repository" >> debian/DEBIAN/control
@@ -55,25 +50,6 @@ jobs:
             mkdir -p debian/usr/local/bin
             cp target/release/repo-dump debian/usr/local/bin/
             dpkg-deb --build debian ${{ matrix.artifact_name }}
-          elif [ "${{ matrix.package_type }}" = "exe" ]; then
-            # Create Windows package
-            mkdir -p windows/repo-dump
-            cp target/release/repo-dump.exe windows/repo-dump/
-            zip -r ${{ matrix.artifact_name }} windows
-          elif [ "${{ matrix.package_type }}" = "dmg" ]; then
-            # Create macOS package
-            brew install create-dmg
-            mkdir -p dmg
-            cp target/release/repo-dump dmg/
-            create-dmg \
-              --volname "Repo Dump" \
-              --window-pos 200 120 \
-              --window-size 800 400 \
-              --icon-size 100 \
-              --icon "repo-dump" 200 190 \
-              --hide-extension "repo-dump" \
-              --app-drop-link 600 185 \
-              "${{ matrix.artifact_name }}" dmg
           fi
       - name: Upload artifact
         uses: actions/upload-artifact@v4

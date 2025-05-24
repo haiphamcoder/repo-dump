@@ -21,6 +21,7 @@ pub struct Text {
     pub no_tech: &'static str,
     pub included_ext: &'static str,
     pub excluded_dirs: &'static str,
+    pub generating_tree: &'static str,
 }
 
 pub const TEXT_EN: Text = Text {
@@ -34,6 +35,7 @@ pub const TEXT_EN: Text = Text {
     no_tech: "⚠️ No specific technology detected, including all code files",
     included_ext: "📋 Extensions included: ",
     excluded_dirs: "📂 Excluded directories: ",
+    generating_tree: "🌳 Generating directory tree...",
 };
 
 pub const TEXT_VI: Text = Text {
@@ -47,4 +49,5 @@ pub const TEXT_VI: Text = Text {
     no_tech: "⚠️ Không phát hiện được công nghệ cụ thể, bao gồm tất cả các tệp mã",
     included_ext: "📋 Các phần mở rộng được bao gồm: ",
     excluded_dirs: "📂 Các thư mục bị loại trừ: ",
+    generating_tree: "🌳 Tạo cây thư mục...",
 };

@@ -1,5 +1,0 @@
-# ==================================================
-# Source Code Aggregation
-# Project path: /home/haipn/Documents/repo-dump
-# Detected technologies: rust
-# ==================================================

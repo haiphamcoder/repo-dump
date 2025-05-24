@@ -1,6 +1,7 @@
 mod constants;
 mod aggregator;
 mod detector;
+mod tree_generator;
 
 use clap::Parser;
 use std::env;

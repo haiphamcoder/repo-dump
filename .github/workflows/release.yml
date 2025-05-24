@@ -50,6 +50,7 @@ jobs:
           RUN cargo build --release
 
           # Create Debian package
+          ARG VERSION
           RUN mkdir -p debian/DEBIAN
           RUN echo "Package: repo-dump" > debian/DEBIAN/control
           RUN echo "Version: ${VERSION}" >> debian/DEBIAN/control
@@ -65,7 +66,7 @@ jobs:
           # Build Docker image and create package
           VERSION=${GITHUB_REF#refs/tags/}
           VERSION=${VERSION#v}
-          docker build --build-arg VERSION=$VERSION -t repo-dump-builder .
+          docker build --build-arg VERSION="$VERSION" -t repo-dump-builder .
           docker create --name builder repo-dump-builder
           docker cp builder:/build/repo-dump-linux-x86_64.deb .
           docker rm builder

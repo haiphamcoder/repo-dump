@@ -76,16 +76,20 @@ jobs:
           # Get the version from the tag
           VERSION=${GITHUB_REF#refs/tags/}
           
-          # Extract changelog for this version
-          awk -v version="$VERSION" '
-            BEGIN { p=0 }
-            /^## \[' version '\]/ { p=1; next }
-            /^## \[/ { p=0 }
-            p { print }
-          ' CHANGELOG.md > release_changelog.md
+          # Create release notes
+          echo "# Release $VERSION" > release_changelog.md
+          echo "" >> release_changelog.md
+          echo "## Changes" >> release_changelog.md
+          echo "" >> release_changelog.md
+          
+          # Get commit messages since last tag
+          git log --pretty=format:"* %s" $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD >> release_changelog.md
           
           # Update CHANGELOG.md
-          sed -i "s/^## \[Unreleased\]/## \[Unreleased\]\n\n## \[$VERSION\] - $(date +%Y-%m-%d)/" CHANGELOG.md
+          cat release_changelog.md > temp_changelog.md
+          echo "" >> temp_changelog.md
+          cat CHANGELOG.md >> temp_changelog.md
+          mv temp_changelog.md CHANGELOG.md
           
           # Create a commit with the updated changelog
           git config --local user.email "action@github.com"

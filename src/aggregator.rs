@@ -4,6 +4,7 @@ use std::fs;
 
 use crate::constants::Text;
 use crate::detector::{detect_project_tech, get_exclude_patterns, get_extensions_by_tech};
+use crate::tree_generator::generate_directory_tree;
 
 pub fn aggregate_repo(repo_path: &Path, text: &Text) -> Result<bool> {
     // Check if the repository exists
@@ -64,6 +65,15 @@ pub fn aggregate_repo(repo_path: &Path, text: &Text) -> Result<bool> {
         }
     ));
     content.push(format!("# {}", "=".repeat(50)));
+    content.push("".to_string());
+
+    // Generate the directory tree
+    println!("{}", text.generating_tree);
+    content.push("## DIRECTORY STRUCTURE".to_string());
+    content.push("```".to_string());
+    content.push(generate_directory_tree(repo_path, &exclude_dirs));
+    content.push("```".to_string());
+    content.push("".to_string());
 
     // Write the content to the output file
     let output_path = repo_path.join("source_dump.txt");

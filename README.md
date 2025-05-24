@@ -13,6 +13,16 @@ A powerful Rust-based tool for analyzing and dumping source code from project di
 
 ## ✨ Features
 
+- 🔍 **Automatic Technology Detection**
+  - Supports multiple programming languages and frameworks
+  - Smart detection of project structure and dependencies
+  - Extensible technology indicators
+
+- 🌐 **Multilingual Support**
+  - English and Vietnamese interfaces
+  - Easy to add more languages
+  - Consistent user experience across languages
+
 ## 🚀 Installation
 
 ### Prerequisites

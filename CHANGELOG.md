@@ -1,3 +1,8 @@
+# Release v0.0.7
+
+## Changes
+
+
 # Release v0.0.6
 
 ## Changes

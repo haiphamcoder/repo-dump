@@ -9,14 +9,22 @@ use std::io::{self, Write};
 use anyhow::Result;
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[command(
+    author = "Hai Pham Ngoc <ngochai285nd@gmail.com>",
+    version = "v0.0.8",
+    about = "A tool for analyzing and dumping source code from project directories",
+    long_about = "Repo Dump is a powerful tool that helps you analyze and extract source code from project directories. It supports multiple languages and provides detailed insights about your codebase.",
+    arg_required_else_help = false
+)]
 struct Args {
     /// Project path to analyze
-    #[arg(short, long)]
+    #[arg(short, long, help = "Path to the project directory you want to analyze")]
     path: Option<String>,
 }
 
 fn main() -> Result<()> {
+    let args = Args::parse();
+    
     // Print the logo and welcome message
     println!("{}", constants::LOGO);
     println!("{}", "=".repeat(40));
@@ -43,7 +51,6 @@ fn main() -> Result<()> {
     };
 
     // Parse the arguments and get the folder path
-    let args = Args::parse();
     let path = args.path.unwrap_or_else(|| {
         print!("{}", text.input_repo_path);
         io::stdout().flush().unwrap();
